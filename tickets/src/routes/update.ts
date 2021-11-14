@@ -6,7 +6,8 @@ import {
     requireAuth,
     validateRequest,
     NotFoundError,
-    NotAuthorizedError
+    NotAuthorizedError,
+    BadRequestError
 } from "@hari-ticket/common";
 import { Ticket } from '../models/ticket';
 
@@ -28,7 +29,9 @@ router.put(
     if (!ticket) {
       throw new NotFoundError();
     }
-
+    if(ticket.orderId){
+      throw new BadRequestError('no update for reserved ticket')
+    }
     if (ticket.userId !== req.currentUser!.id) {
       throw new NotAuthorizedError();
     }
@@ -44,6 +47,7 @@ router.put(
       title:ticket.title,
       price:ticket.price,
       userId:ticket.userId,
+      version:ticket.version,
     })
 
     res.send(ticket);

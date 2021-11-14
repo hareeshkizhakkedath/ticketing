@@ -4,29 +4,31 @@ import { json } from 'body-parser';
 import cookieSession from 'cookie-session';
 import { errorHandler, NotFoundError , currentUser } from '@hari-ticket/common';
 
-import {indexOrderRouter} from './routes/index'
-import {showOrderRouter} from './routes/show';
-import {newOrderRouter} from './routes/new';
-import {deleteOrderRouter} from './routes/delete';
+import { deleteOrderRouter } from './routes/delete';
+import { indexOrderRouter } from './routes/index';
+import { newOrderRouter } from './routes/new';
+import { showOrderRouter } from './routes/show';
 
 const app = express();
 app.set('trust proxy', true);
 app.use(json());
 app.use(
   cookieSession({
-    signed: false,  //makes no encryption in cookie
-    secure:process.env.NODE_ENV!=='test'   
+    signed: false,
+    secure: process.env.NODE_ENV !== 'test',
   })
 );
-app.use(currentUser)
+app.use(currentUser);
+
+app.use(deleteOrderRouter);
+app.use(indexOrderRouter);
 app.use(newOrderRouter);
 app.use(showOrderRouter);
-app.use(indexOrderRouter);
-app.use(deleteOrderRouter);
 
 app.all('*', async (req, res) => {
   throw new NotFoundError();
 });
 
 app.use(errorHandler);
-export {app} ;
+
+export { app };
